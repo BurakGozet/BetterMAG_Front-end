@@ -1,0 +1,95 @@
+/*
+LESS variables are information about icon's compiled state, stored under its original file name
+
+.icon-home {
+  width: @icon-home-width;
+}
+
+The large array-like variables contain all information about a single icon
+@icon-home: x y offset_x offset_y width height total_width total_height image_path name;
+
+At the bottom of this section, we provide information about the spritesheet itself
+@spritesheet: width height image @spritesheet-sprites;
+*/
+@-gradient-88px-name: 'Gradient-88px';
+@-gradient-88px-x: 0px;
+@-gradient-88px-y: 0px;
+@-gradient-88px-offset-x: 0px;
+@-gradient-88px-offset-y: 0px;
+@-gradient-88px-width: 121px;
+@-gradient-88px-height: 88px;
+@-gradient-88px-total-width: 121px;
+@-gradient-88px-total-height: 115px;
+@-gradient-88px-image: '../img/sprite.png';
+@-gradient-88px: 0px 0px 0px 0px 121px 88px 121px 115px '../img/sprite.png' 'Gradient-88px';
+@-news-title-b-g-name: 'News-Title_BG';
+@-news-title-b-g-x: 0px;
+@-news-title-b-g-y: 88px;
+@-news-title-b-g-offset-x: 0px;
+@-news-title-b-g-offset-y: -88px;
+@-news-title-b-g-width: 121px;
+@-news-title-b-g-height: 27px;
+@-news-title-b-g-total-width: 121px;
+@-news-title-b-g-total-height: 115px;
+@-news-title-b-g-image: '../img/sprite.png';
+@-news-title-b-g: 0px 88px 0px -88px 121px 27px 121px 115px '../img/sprite.png' 'News-Title_BG';
+@spritesheet-width: 121px;
+@spritesheet-height: 115px;
+@spritesheet-image: '../img/sprite.png';
+@spritesheet-sprites: @-gradient-88px @-news-title-b-g;
+@spritesheet: 121px 115px '../img/sprite.png' @spritesheet-sprites;
+
+/*
+The provided classes are intended to be used with the array-like variables
+
+.icon-home {
+  .sprite-width(@icon-home);
+}
+.icon-email {
+  .sprite(@icon-email);
+}
+*/
+.sprite-width(@sprite) {
+  width: extract(@sprite, 5);
+}
+
+.sprite-height(@sprite) {
+  height: extract(@sprite, 6);
+}
+
+.sprite-position(@sprite) {
+  @sprite-offset-x: extract(@sprite, 3);
+  @sprite-offset-y: extract(@sprite, 4);
+  background-position: @sprite-offset-x @sprite-offset-y;
+}
+
+.sprite-image(@sprite) {
+  @sprite-image: extract(@sprite, 9);
+  @sprite-image-bare: ~`"@{sprite-image}".slice(1, -1)`;
+  background-image: url(@sprite-image-bare);
+}
+
+.sprite(@sprite) {
+  .sprite-image(@sprite);
+  .sprite-position(@sprite);
+  .sprite-width(@sprite);
+  .sprite-height(@sprite);
+}
+
+/*
+The `.sprites` mixin generates identical output to the CSS template
+  but can be overridden inside of LESS
+
+This must be run when you have at least 2 sprites.
+  If run with a single sprite, then there will be reference errors.
+
+.sprites(@spritesheet-sprites);
+*/
+.sprites(@sprites, @i: 1) when (@i <= length(@sprites)) {
+  @sprite: extract(@sprites, @i);
+  @sprite-name: e(extract(@sprite, 10));
+  .@{sprite-name} {
+    .sprite(@sprite);
+  }
+  .sprites(@sprites, @i + 1);
+}
